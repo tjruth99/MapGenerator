@@ -23,6 +23,9 @@ def randomWalk():
     for i in range(steps):
         if (0 < x < n) and (0 < y < n):
             map[x][y] = 1
+        else:
+            x = random.randint(0,n)
+            y = random.randint(0,n)
 
         val = random.randint(1,4)
         if val == 1:
