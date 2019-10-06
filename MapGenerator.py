@@ -1,10 +1,6 @@
 import random
-from colorama import init, Back
+from colorama import init, Back, Style
 init()
-
-n = int(input("enter n: "))
-steps = int(input("enter steps: "))
-map = [[0 for i in range(n)] for j in range(n)] 
 
 def printmap():
     for i in range(n):
@@ -14,6 +10,7 @@ def printmap():
             else:
                 print(Back.GREEN + "1", end = " ")
         print()
+    print(Style.RESET_ALL)
     pass
 
 def randomWalk():
@@ -21,7 +18,7 @@ def randomWalk():
     y = int(n/2)
 
     for i in range(steps):
-        if (0 < x < n) and (0 < y < n):
+        if (-1 < x < n) and (-1 < y < n):
             map[x][y] = 1
         else:
             x = random.randint(0,n)
@@ -40,4 +37,8 @@ def randomWalk():
     printmap()
     pass
 
-randomWalk()
+while True:
+    n = int(input("enter n: "))
+    steps = int(input("enter steps: "))
+    map = [[0 for i in range(n)] for j in range(n)] 
+    randomWalk()
