@@ -4,18 +4,26 @@ from colorama import init, Back, Style
 init()
 
 #Variables:
+#   seed: seed for generation (optional)
 #   n: width/height of map
 #   steps: number of steps to generate the map 
-#   cities: number of cities to generate
+#   numCities: number of cities to generate
+#       default: math.ceil(n/10)
 #   elevation: number of ranges to generate
+#       default: math.ceil(n/10)
+#   islandCoef: variable to determine how many times the brush jumps around to make islands
 #   rangeLength: max length for each mountain range
-#   brush_size: size of brush that paints the land/mountains
+#   brush_size: size of brush that paints the land/mountains (0 small, 1 medium, 2 large)
+#       default: 1
 
-n = 100
-steps = 10000
+# random.seed( 10 )
+n = 50
+steps = 2500
 numCities = math.ceil(n/10)
 elevation = math.ceil(n/10)
+islandCoef = 0.00
 rangeLength = 100
+brush_size = 1
 
 # 0 is water, 1 is land, 2 is a city, 3 is mountain, 4 is beach
 def printmap():
@@ -30,9 +38,35 @@ def printmap():
             elif map[i][j] == 3:
                 print(Back.WHITE + "3", end = " ")
             elif map[i][j] == 4:
-                print(Back.YELLOW + "4", end = " ")
+                print(Back.LIGHTYELLOW_EX + "4", end = " ")
         print()
     print(Style.RESET_ALL)
+    pass
+
+def paint(x,y,num,val):
+    map[x][y] = num
+
+    if(x == 0 or x == n-1 or y == 0 or y == n-1):
+        pass
+
+    if(brush_size >= 1):
+        if (val == 1 or val == 2):
+            map[x][y+1] = num
+            map[x][y-1] = num
+        elif(val == 3 or val == 4):
+            map[x+1][y] = num
+            map[x-1][y] = num
+
+    if(brush_size >= 2):
+        map[x+1][y] = num
+        map[x-1][y] = num
+        map[x][y+1] = num
+        map[x][y-1] = num
+        map[x+1][y+1] = num
+        map[x+1][y-1] = num
+        map[x-1][y+1] = num
+        map[x-1][y-1] = num
+
     pass
 
 #   Randomly add cities to the map proportional to the size of the map
@@ -91,13 +125,7 @@ def elevate():
 
         # For loop paints the range onto the map
         for i in range(rangeLength):
-            map[x][y] = 3
-            if (val == 1 or val == 2):
-                map[x][y+1] = 3
-                map[x][y-1] = 3
-            elif(val == 3 or val == 4):
-                map[x+1][y] = 3
-                map[x-1][y] = 3
+            paint(x,y,3,val)
 
             val = random.randint(1,4)
             if val == 1:
@@ -129,14 +157,13 @@ def generateMap():
 
     for i in range(steps):
         if (0 < x < n-1) and (0 < y < n-1):
-            map[x][y] = 1
-            if (val == 1 or val == 2):
-                map[x][y+1] = 1
-                map[x][y-1] = 1
-            elif(val == 3 or val == 4):
-                map[x+1][y] = 1
-                map[x-1][y] = 1
+            paint(x,y,1,val)
         else:
+            x = random.randint(0,n-1)
+            y = random.randint(0,n-1)
+
+        newIsland = random.randint(0, 100)
+        if(newIsland < islandCoef*100):
             x = random.randint(0,n-1)
             y = random.randint(0,n-1)
 
@@ -157,11 +184,12 @@ def generateMap():
     pass
 
 while True:
+    print("n: %d, steps: %d" %(n,steps))
     generate = input("Generate a new map? >")
     if generate == "exit":
         break
 
-#   n = int(n)
-#   steps = int(input("enter steps: "))
+#    n = int(input("n: "))
+#    steps = int(input("enter steps: "))
     map = [[0 for i in range(n)] for j in range(n)]
     generateMap()
