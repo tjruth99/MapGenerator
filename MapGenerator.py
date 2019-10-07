@@ -17,39 +17,44 @@ init()
 #       default: 1
 
 # random.seed( 10 )
-n = 50
-steps = 2500
+n = 100
+steps = 10000
 numCities = math.ceil(n/10)
 elevation = math.ceil(n/10)
 islandCoef = 0.00
-rangeLength = 100
+rangeLength = n
 brush_size = 1
 
 # 0 is water, 1 is land, 2 is a city, 3 is mountain, 4 is beach
 def printmap():
+    global area
     for i in range(n):
         for j in range(n):
             if map[i][j] == 0:
                 print(Back.BLUE + "0", end = " ")
+                pass
             elif map[i][j] == 1:
                 print(Back.GREEN + "1", end = " ")
+                area = area + 1
             elif map[i][j] == 2:
                 print(Back.BLACK + "2", end = " ")
+                area = area + 1
             elif map[i][j] == 3:
                 print(Back.WHITE + "3", end = " ")
+                area = area + 1
             elif map[i][j] == 4:
                 print(Back.LIGHTYELLOW_EX + "4", end = " ")
         print()
-    print(Style.RESET_ALL)
+    print(Back.RESET)
     pass
 
 def paint(x,y,num,val):
     map[x][y] = num
 
     if(x == 0 or x == n-1 or y == 0 or y == n-1):
-        pass
+        return
 
-    if(brush_size >= 1):
+    if(brush_size == 1):
         if (val == 1 or val == 2):
             map[x][y+1] = num
             map[x][y-1] = num
@@ -57,7 +62,7 @@ def paint(x,y,num,val):
             map[x+1][y] = num
             map[x-1][y] = num
 
-    if(brush_size >= 2):
+    if(brush_size == 2):
         map[x+1][y] = num
         map[x-1][y] = num
         map[x][y+1] = num
@@ -137,7 +142,7 @@ def elevate():
             else:
                 y = y - 1
 
-            if ((x < -1) or (x > n) or (y < -1) or (y > n) or map[x][y] == 0):
+            if ((x < -1) or (x > n-1) or (y < -1) or (y > n-1) or map[x][y] == 0):
                 break
 
     pass
@@ -189,7 +194,9 @@ while True:
     if generate == "exit":
         break
 
-#    n = int(input("n: "))
-#    steps = int(input("enter steps: "))
+#   n = int(input("n: "))
+#   steps = int(input("enter steps: "))
     map = [[0 for i in range(n)] for j in range(n)]
+    area = 0
     generateMap()
+    print("Land Area: %d, Total Area: %d (%.2f%%)" %(area, n*n, (area/(n*n))*100))
