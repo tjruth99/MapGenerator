@@ -194,8 +194,8 @@ while True:
     if generate == "exit":
         break
 
-#   n = int(input("n: "))
-#   steps = int(input("enter steps: "))
+    n = int(input("n: "))
+    steps = int(input("enter steps: "))
     map = [[0 for i in range(n)] for j in range(n)]
     area = 0
     generateMap()
