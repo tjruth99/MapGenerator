@@ -1,12 +1,15 @@
 import random
 import math
 from colorama import init, Back, Style
+import numpy
+import scipy.misc as smp
+from PIL import Image
 init()
 
 #Variables:
 #   seed: seed for generation (optional)
 #   n: width/height of map
-#   steps: number of steps to generate the map 
+#   steps: number of steps to generate the map
 #   numCities: number of cities to generate
 #       default: math.ceil(n/10)
 #   elevation: number of ranges to generate
@@ -26,27 +29,49 @@ rangeLength = n
 brush_size = 1
 
 # 0 is water, 1 is land, 2 is a city, 3 is mountain, 4 is beach
-def printmap():
+def printmap( printToConsole ):
+    data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
+
     global area
     for i in range(n):
         for j in range(n):
             if map[i][j] == 0:
-                print(Back.BLUE + "0", end = " ")
-                pass
+                if(printToConsole):
+                    print(Back.BLUE + "0", end = " ")
+
+                data[i][j] = [0,0,200]
+
             elif map[i][j] == 1:
-                print(Back.GREEN + "1", end = " ")
+                if(printToConsole):
+                    print(Back.GREEN + "1", end = " ")
+
+                data[i][j] = [0,200,0]
                 area = area + 1
+
             elif map[i][j] == 2:
-                print(Back.BLACK + "2", end = " ")
+                if(printToConsole):
+                    print(Back.BLACK + "2", end = " ")
+
+                data[i][j] = [0,0,0]
                 area = area + 1
+
             elif map[i][j] == 3:
-                print(Back.WHITE + "3", end = " ")
+                if(printToConsole):
+                    print(Back.WHITE + "3", end = " ")
+
+                data[i][j] = [225,225,225]
                 area = area + 1
+
             elif map[i][j] == 4:
-                print(Back.LIGHTYELLOW_EX + "4", end = " ")
-        print()
-    print(Back.RESET)
-    pass
+                if(printToConsole):
+                    print(Back.LIGHTYELLOW_EX + "4", end = " ")
+
+                data[i][j] = [225,225,0]
+        if(printToConsole):
+            print()
+            print(Back.RESET)
+
+    Image.fromarray(data).show()
 
 def paint(x,y,num,val):
     map[x][y] = num
@@ -185,18 +210,21 @@ def generateMap():
     elevate()
     populate()
 #   beach()
-    printmap()
+    printmap(False)
     pass
 
 while True:
-    print("n: %d, steps: %d" %(n,steps))
-    generate = input("Generate a new map? >")
-    if generate == "exit":
-        break
-
     n = int(input("n: "))
     steps = int(input("enter steps: "))
+    elevation = int(input("elevation: "))
+    rangeLength = int(input("rangeLength: "))
+    numCities = math.ceil(n/10)
+    islandCoef = float(input("islandCoef: "))
+    brush_size = int(input("brush_size: "))
+
     map = [[0 for i in range(n)] for j in range(n)]
     area = 0
+
+    print("n: %d, steps: %d" %(n,steps))
     generateMap()
     print("Land Area: %d, Total Area: %d (%.2f%%)" %(area, n*n, (area/(n*n))*100))
