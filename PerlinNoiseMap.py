@@ -1,11 +1,18 @@
 import noise
 import numpy
-import scipy
+import random
 from PIL import Image
+
+deepWater = [0, 0, 150]
+water = [0, 0, 225]
+sand = [194, 178, 128]
+grass = [0, 150, 0]
+mountain = [100, 100, 100]
+snow = [225, 225, 225]
 
 n = 1024
 scale = 100.0
-octaves = 6
+octaves = 5
 persistence = 0.5
 lacunarity = 2.0
 
@@ -14,20 +21,26 @@ def generateNoiseMap():
     #help(noise)
     map = numpy.zeros((n,n))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
+    
+    seed = int(input("seed: "))
+
+    random.seed( seed )
+
+    rand = random.randint(0, 1024)
 
     max = -1
     min = 1
 
     for i in range(n):
         for j in range(n):
-            num = noise.pnoise2(    i/scale, 
-                                    j/scale, 
-                                    octaves=octaves, 
-                                    persistence=persistence, 
-                                    lacunarity=lacunarity, 
-                                    repeatx=1024, 
-                                    repeaty=1024, 
-                                    base=0) * 10
+            num = noise.pnoise2(    (i/scale), 
+                                    (j/scale), 
+                                    octaves, 
+                                    persistence, 
+                                    lacunarity, 
+                                    repeatx=n, 
+                                    repeaty=n, 
+                                    base=rand) * 10
             map[i][j] = num
 
             if num > max:
@@ -37,20 +50,20 @@ def generateNoiseMap():
                 min = num
                 
             if( num < -1 ):                 # deep ocean
-                data[i][j] = [0, 0, 150]
+                data[i][j] = deepWater
             elif ( num < 0 ):               # ocean
-                data[i][j] = [0, 0, 225]
+                data[i][j] = water
             elif ( num < 0.5 ):             # sand
-                data[i][j] = [194, 178, 128]
-            elif ( num < 1.5 ):             # land land
-                data[i][j] = [0, 150, 0]
-            elif( num < 2.5 ):              # mountains
-                data[i][j] = [100, 100, 100]
+                data[i][j] = sand
+            elif ( num < 1.5 ):             # land
+                data[i][j] = grass
+            elif( num < 2.0 ):              # mountains
+                data[i][j] = mountain
             else:                           #snow
-                data[i][j] = [225, 225, 225]
-
-            #data[i][j] = [num*225, num*225, num*225]
+                data[i][j] = snow
 
     Image.fromarray(data).show()
     print(max,min)
+
+    generateNoiseMap()
     pass
