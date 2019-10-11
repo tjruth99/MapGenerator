@@ -6,7 +6,7 @@ import scipy.misc as smp
 from PIL import Image
 init()
 
-#Variables:
+# Variables:
 #   seed: seed for generation (optional)
 #   n: width/height of map
 #   steps: number of steps to generate the map
@@ -87,7 +87,7 @@ def paint(x,y,num,val):
             map[x+1][y] = num
             map[x-1][y] = num
 
-    if(brush_size == 2):
+    if(brush_size >= 2):
         map[x+1][y] = num
         map[x-1][y] = num
         map[x][y+1] = num
@@ -97,6 +97,11 @@ def paint(x,y,num,val):
         map[x-1][y+1] = num
         map[x-1][y-1] = num
 
+    if(brush_size >=3):
+        for i in range(-3, 3):
+            for j in range(-3, 3):
+                if((x+i > 0 and x+i < n) and (y+j > 0 and y+j <n)):
+                    map[x+i][y+j] = num
     pass
 
 #   Randomly add cities to the map proportional to the size of the map
