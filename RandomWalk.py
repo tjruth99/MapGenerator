@@ -73,7 +73,31 @@ def printmap( printToConsole ):
         if(printToConsole):
             print(Back.RESET)
 
-    Image.fromarray(data).show()
+    #Image.fromarray(data).show()
+    scaleUp(8)
+   
+    #Image.fromarray(data).show()
+
+def scaleUp(factor):
+        data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
+
+        for i in range(n):
+            for j in range(n):
+                for k in range(factor):
+                    for l in range(factor):
+                        val = map[i][j]
+                        if val == 0:
+                            data[(i*factor)+k][(j*factor)+l] = [0,0,200]
+                        elif val == 1:
+                            data[(i*factor)+k][(j*factor)+l] = [0,200,0]
+                        elif val == 2:
+                            data[(i*factor)+k][(j*factor)+l] = [0,0,0]
+                        elif val == 3:
+                            data[(i*factor)+k][(j*factor)+l] = [225,225,225]
+
+
+        Image.fromarray(data).show()
+
 
 def paint(x,y,num,val):
     map[x][y] = num
