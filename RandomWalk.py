@@ -16,23 +16,20 @@ init()
 #       default: math.ceil(n/10)
 #   islandCoef: variable to determine how many times the brush jumps around to make islands
 #   rangeLength: max length for each mountain range
-#   brush_size: size of brush that paints the land/mountains (0 small, 1 medium, 2 large, 3 extra large)
+#   brushSize: size of brush that paints the land/mountains (0 small, 1 medium, 2 large, 3 extra large)
 #       default: 1
 
 # random.seed( 10 )
 
 map = []
-area = 0
-n = 0
-steps = 0
-numCities = 0
-elevation = 0
-islandCoef = 0.00
-rangeLength = 0
-brush_size = 1
+waterColor = [0, 0, 200]
+landColor = [0, 150, 0]
+cityColor = [0, 0, 0]
+snowColor = [225, 225, 225]
+sandColor = [194, 178, 128]
 
 # 0 is water, 1 is land, 2 is a city, 3 is mountain, 4 is beach
-def printmap( printToConsole ):
+def printmap( n, printToConsole, scaleFactor ):
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
 
     global area
@@ -42,43 +39,39 @@ def printmap( printToConsole ):
                 if(printToConsole):
                     print(Back.BLUE + "0", end = " ")
 
-                data[i][j] = [0,0,200]
+                data[i][j] = waterColor
 
             elif map[i][j] == 1:
                 if(printToConsole):
                     print(Back.GREEN + "1", end = " ")
 
-                data[i][j] = [0,200,0]
-                area = area + 1
+                data[i][j] = landColor
 
             elif map[i][j] == 2:
                 if(printToConsole):
                     print(Back.BLACK + "2", end = " ")
 
-                data[i][j] = [0,0,0]
-                area = area + 1
+                data[i][j] = cityColor
 
             elif map[i][j] == 3:
                 if(printToConsole):
                     print(Back.WHITE + "3", end = " ")
 
-                data[i][j] = [225,225,225]
-                area = area + 1
+                data[i][j] = snowColor
 
             elif map[i][j] == 4:
                 if(printToConsole):
                     print(Back.LIGHTYELLOW_EX + "4", end = " ")
 
-                data[i][j] = [225,225,0]
+                data[i][j] = sandColor
         if(printToConsole):
             print(Back.RESET)
 
-    #Image.fromarray(data).show()
-    scaleUp(8)
+    scaleUp(n, scaleFactor)
    
     #Image.fromarray(data).show()
 
-def scaleUp(factor):
+def scaleUp(n, factor):
         data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
 
         for i in range(n):
@@ -87,25 +80,28 @@ def scaleUp(factor):
                     for l in range(factor):
                         val = map[i][j]
                         if val == 0:
-                            data[(i*factor)+k][(j*factor)+l] = [0,0,200]
+                            data[(i*factor)+k][(j*factor)+l] = waterColor
                         elif val == 1:
-                            data[(i*factor)+k][(j*factor)+l] = [0,200,0]
+                            data[(i*factor)+k][(j*factor)+l] = landColor
                         elif val == 2:
-                            data[(i*factor)+k][(j*factor)+l] = [0,0,0]
+                            data[(i*factor)+k][(j*factor)+l] = cityColor
                         elif val == 3:
-                            data[(i*factor)+k][(j*factor)+l] = [225,225,225]
-
+                            data[(i*factor)+k][(j*factor)+l] = snowColor
+                        elif val == 4:
+                            data[(i*factor)+k][(j*factor)+l] = sandColor
+                        else:
+                            print("error")
 
         Image.fromarray(data).show()
 
 
-def paint(x,y,num,val):
+def paint(n, x, y, num, val, brushSize):
     map[x][y] = num
 
     if(x == 0 or x == n-1 or y == 0 or y == n-1):
         return
 
-    if(brush_size == 1):
+    if(brushSize == 1):
         if (val == 1 or val == 2):
             map[x][y+1] = num
             map[x][y-1] = num
@@ -113,7 +109,7 @@ def paint(x,y,num,val):
             map[x+1][y] = num
             map[x-1][y] = num
 
-    if(brush_size >= 2):
+    if(brushSize >= 2):
         map[x+1][y] = num
         map[x-1][y] = num
         map[x][y+1] = num
@@ -123,7 +119,7 @@ def paint(x,y,num,val):
         map[x-1][y+1] = num
         map[x-1][y-1] = num
 
-    if(brush_size >=3):
+    if(brushSize >=3):
         for i in range(-3, 3):
             for j in range(-3, 3):
                 if((x+i > 0 and x+i < n) and (y+j > 0 and y+j <n)):
@@ -131,7 +127,7 @@ def paint(x,y,num,val):
     pass
 
 #   Randomly add cities to the map proportional to the size of the map
-def populate():
+def populate(n, numCities):
     cities = 0
     tries = 0
 
@@ -152,7 +148,7 @@ def populate():
     pass
 
 #   Function to tell if a node is adjacent to a water node
-def nextToWater(x, y):
+def nextToWater(n, x, y):
     if(x == 0 or x == n-1 or y == 0 or y == n-1):
         return True
 
@@ -168,7 +164,7 @@ def nextToWater(x, y):
     return False
 
 #   Adds mountain ranges to the map
-def elevate():
+def elevate(n, elevation, rangeLength, brushSize):
     for ranges in range(elevation):
         x = -1
         y = -1
@@ -176,7 +172,7 @@ def elevate():
         tries = 0
 
         # While loop finds an appropriate starting location for a range
-        while (map[x][y] != 1 or nextToWater(x,y)):
+        while (map[x][y] != 1 or nextToWater(n, x, y)):
             if(tries >= n):
                 return
 
@@ -186,7 +182,7 @@ def elevate():
 
         # For loop paints the range onto the map
         for i in range(rangeLength):
-            paint(x,y,3,val)
+            paint(n, x, y, 3, val, brushSize)
 
             val = random.randint(1,4)
             if val == 1:
@@ -203,22 +199,22 @@ def elevate():
 
     pass
 
-def beach():
+def beach(n):
     for x in range(n):
         for y in range(n):
-            if(map[x][y] == 1 and nextToWater(x,y)):
+            if(map[x][y] == 1 and nextToWater(n, x,y)):
                 map[x][y] = 4
     pass
 
 #   Generate map based on random walk
-def generateMap():
+def generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSize, scaleFactor):
     x = int(n/2)
     y = int(n/2)
     val = -1
 
     for i in range(steps):
         if (0 < x < n-1) and (0 < y < n-1):
-            paint(x,y,1,val)
+            paint(n, x, y, 1, val, brushSize)
         else:
             x = random.randint(0,n-1)
             y = random.randint(0,n-1)
@@ -238,22 +234,14 @@ def generateMap():
         else:
             y = y - 1
 
-    elevate()
-    populate()
-#   beach()
-    printmap(False)
+    elevate(n, elevation, rangeLength, brushSize)
+    populate(n, numCities)
+#   beach(n)
+    printmap(n, False, scaleFactor)
     pass
 
 def randomWalk():
     global map
-    global area
-    global n
-    global steps
-    global elevation
-    global rangeLength
-    global numCities
-    global islandCoef
-    global brush_size
 
     print("Generate Random Walk Map")
 
@@ -263,11 +251,10 @@ def randomWalk():
     rangeLength = int(input("rangeLength: "))
     numCities = math.ceil(n/10)
     islandCoef = float(input("islandCoef: "))
-    brush_size = int(input("brush_size: "))
+    brushSize = int(input("brush_size: "))
+    scaleFactor = int(input("scale factor: "))
 
     map = [[0 for i in range(n)] for j in range(n)]
-    area = 0
 
     print("n: %d, steps: %d" %(n,steps))
-    generateMap()
-    print("Land Area: %d, Total Area: %d (%.2f%%)" %(area, n*n, (area/(n*n))*100))
+    generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSize, scaleFactor)

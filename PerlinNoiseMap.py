@@ -22,15 +22,15 @@ def generateNoiseMap():
     map = numpy.zeros((n,n))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
     
-    # TODO: FInd a better way to do variability
+    # TODO: Find a better way to do variability
     seed = int(input("seed: "))
 
     random.seed( seed )
 
     rand = random.randint(0, 1024)
 
-    max = -100
-    min = 100
+    max = -1024
+    min = 1024
 
     for i in range(n):
         for j in range(n):
