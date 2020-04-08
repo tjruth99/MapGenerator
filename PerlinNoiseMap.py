@@ -20,21 +20,22 @@ lacunarity = 2.0
 def generateNoiseMap():
     print("Generate Perlin Noise Map")
     map = numpy.zeros((n,n))
-    data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
     
     # TODO: Find a better way to do variability
     seed = int(input("seed: "))
 
     random.seed( seed )
 
-    rand = random.randint(0, 1024)
+    rand = random.randint(0,1024)
+
+    print(rand)
 
     max = -1024
     min = 1024
 
     for i in range(n):
         for j in range(n):
-            num = noise.pnoise2(    (i/scale), 
+            num = noise.snoise2(    (i/scale), 
                                     (j/scale), 
                                     octaves, 
                                     persistence, 
@@ -50,20 +51,32 @@ def generateNoiseMap():
             if num < min:
                 min = num
 
+    print(min, max)
+    greyscale(map)
     colorMap(map,max,min)
 
     generateNoiseMap()
     pass
 
+def greyscale(map):
+    data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
+
+    for i in range(n):
+        for j in range(n):
+            num = map[i][j]
+            data[i][j] = [num*225, num*225, num*225]
+
+    Image.fromarray(data).show()
+
 def colorMap(map, max, min):
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
 
-    deepOceanLevel = (max-min)*0.4
-    oceanLevel = (max-min)*0.5
-    sandLevel = (max-min)*0.55
-    landLevel = (max-min)*0.62
-    forestLevel = (max-min)*0.7
-    mountainLevel = (max-min)*0.85
+    deepOceanLevel = (max-min)*0.35 + min
+    oceanLevel = (max-min)*0.4 + min 
+    sandLevel = (max-min)*0.45 + min
+    landLevel = (max-min)*0.60 + min
+    forestLevel = (max-min)*0.7 + min
+    mountainLevel = (max-min)*0.85 + min
 
     for i in range(n):
         for j in range(n):
