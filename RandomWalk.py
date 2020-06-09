@@ -72,27 +72,27 @@ def printmap( n, printToConsole, scaleFactor ):
     #Image.fromarray(data).show()
 
 def scaleUp(n, factor):
-        data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
+    data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
 
-        for i in range(n):
-            for j in range(n):
-                for k in range(factor):
-                    for l in range(factor):
-                        val = map[i][j]
-                        if val == 0:
-                            data[(i*factor)+k][(j*factor)+l] = waterColor
-                        elif val == 1:
-                            data[(i*factor)+k][(j*factor)+l] = landColor
-                        elif val == 2:
-                            data[(i*factor)+k][(j*factor)+l] = cityColor
-                        elif val == 3:
-                            data[(i*factor)+k][(j*factor)+l] = snowColor
-                        elif val == 4:
-                            data[(i*factor)+k][(j*factor)+l] = sandColor
-                        else:
-                            print("error")
+    for i in range(n):
+        for j in range(n):
+            for k in range(factor):
+                for l in range(factor):
+                    val = map[i][j]
+                    if val == 0:
+                        data[(i*factor)+k][(j*factor)+l] = waterColor
+                    elif val == 1:
+                        data[(i*factor)+k][(j*factor)+l] = landColor
+                    elif val == 2:
+                        data[(i*factor)+k][(j*factor)+l] = cityColor
+                    elif val == 3:
+                        data[(i*factor)+k][(j*factor)+l] = snowColor
+                    elif val == 4:
+                        data[(i*factor)+k][(j*factor)+l] = sandColor
+                    else:
+                        print("error")
 
-        Image.fromarray(data).show()
+    Image.fromarray(data).show()
 
 
 def paint(n, x, y, num, val, brushSize):
@@ -258,3 +258,5 @@ def randomWalk():
 
     print("n: %d, steps: %d" %(n,steps))
     generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSize, scaleFactor)
+
+randomWalk()

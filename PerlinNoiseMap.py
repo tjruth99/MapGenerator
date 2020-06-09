@@ -52,11 +52,10 @@ def generateNoiseMap():
                 min = num
 
     print(min, max)
-    greyscale(map)
+    #greyscale(map)
     colorMap(map,max,min)
 
-    generateNoiseMap()
-    pass
+    return map
 
 def greyscale(map):
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
@@ -98,3 +97,24 @@ def colorMap(map, max, min):
 
     Image.fromarray(data).show()
 
+def combine():
+    map1 = generateNoiseMap()
+    map2 = generateNoiseMap()
+    map3 = numpy.zeros((n,n))
+
+    max = -1024
+    min = 1024
+
+    for i in range(n):
+        for j in range(n):
+            num = map1[i][j] * map2[i][j]
+            map3[i][j] = num
+            if num > max:
+                max = num
+
+            if num < min:
+                min = num
+
+    colorMap(map3, max, min)
+
+generateNoiseMap()
