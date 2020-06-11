@@ -91,6 +91,54 @@ def generateClassicDungeonSnake(n, numRooms):
 
     return map
 
+def generateDungeon(n,  cells):
+
+    maxRoomSizeDim = int(n/cells)-5
+    minRoomSizeDim = 10
+    
+    # stores the coords of each room
+    rooms=[]
+
+    # ignore some rooms to give dungeon a more varied look, not always a grid
+    ignoreRoomPercent = 50
+
+    map = numpy.zeros((n,n), dtype=int)
+
+    for i in range(cells):
+        for j in range(cells):
+            lenX = random.randint(minRoomSizeDim, maxRoomSizeDim)
+            lenY = random.randint(minRoomSizeDim, maxRoomSizeDim)
+
+            startX = int(((n/cells) * i) + random.randint(0, int(n/cells) - lenX))
+            startY = int(((n/cells) * j) + random.randint(0, int(n/cells) - lenY))
+
+            # Decides to draw the room or not
+            ignore = random.randint(0, 100)
+
+            if(ignore > ignoreRoomPercent):
+                rooms.append([startX, startY, lenX+startX, lenY+startY])
+                for x in range(lenX):
+                    for y in range(lenY):
+                        map[int(x + startX)][int(y + startY)] = 1
+
+    
+    # draw a border on the edge
+    for i in range(n):
+        map[0][i] = 0
+        map[i][0] = 0
+        map[n-1][i] = 0
+        map[i][n-1] = 0
+
+    for i in rooms:
+        print(i)
+
+    printColor(map)
+
+    return map
+
+            
+
+        
 def printColor(map):
     n = int(map.size**(1/2.0))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
@@ -127,5 +175,6 @@ def printArray(map):
             print(map[i][j], end=" ")
         print()
 
-generateClassicDungeon(10, 10)
-generateClassicDungeonSnake(10, 10)
+generateDungeon(90, 3)
+#generateClassicDungeon(10, 10)
+#generateClassicDungeonSnake(10, 10)
