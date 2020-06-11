@@ -91,16 +91,19 @@ def generateClassicDungeonSnake(n, numRooms):
 
     return map
 
-def generateDungeon(n,  cells):
 
+# TODO:
+#   - add more paths between rooms
+#   - make hallways more maze-like (?)
+def generateDungeon(n, cells):
     maxRoomSizeDim = int(n/cells)-5
     minRoomSizeDim = 10
     
-    # stores the coords of each room
+    # stores the start and end coordinates of each room
     rooms=[]
 
     # ignore some rooms to give dungeon a more varied look, not always a grid
-    ignoreRoomPercent = 50
+    ignoreRoomPercent = 25
 
     map = numpy.zeros((n,n), dtype=int)
 
@@ -121,24 +124,47 @@ def generateDungeon(n,  cells):
                     for y in range(lenY):
                         map[int(x + startX)][int(y + startY)] = 1
 
-    
-    # draw a border on the edge
+    # add a linear path to each room
+    for i in range(1, len(rooms)):
+        fromRoom = rooms[i-1]
+        toRoom = rooms[i]
+
+        # get the starting coordinates for the hallway from somewhere in the from room
+        startX = random.randint(fromRoom[0]+1, fromRoom[2]-1)
+        startY = random.randint(fromRoom[1]+1, fromRoom[3]-1)
+
+        # get the ending coordinates for the hallway from somewhere in the to room
+        endX = random.randint(toRoom[0]+1, toRoom[2]-1)
+        endY = random.randint(toRoom[1]+1, toRoom[3]-1)
+
+        # draw the hallway on the x plane
+        if(endX > startX):
+            for j in range(startX, endX):
+                map[j][startY] = 1
+        else: 
+            for j in range(endX, startX):
+                map[j][startY] = 1
+
+        # draw the hallway on the y plane
+        if(endY > startY):
+            for j in range(startY, endY):
+                map[endX-1][j] = 1
+        else: 
+            for j in range(endY, startY):
+                map[endX-1][j] = 1
+
+    # draw a border on the edge to make the map look cleaner
     for i in range(n):
         map[0][i] = 0
         map[i][0] = 0
         map[n-1][i] = 0
         map[i][n-1] = 0
 
-    for i in rooms:
-        print(i)
-
     printColor(map)
 
     return map
 
             
-
-        
 def printColor(map):
     n = int(map.size**(1/2.0))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
