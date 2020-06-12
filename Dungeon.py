@@ -142,18 +142,16 @@ def generateDungeon(cells):
 # Draw the path to each room using minimum spanning tree
 def drawPath(map, rooms):
     connectedRooms = [0]
+    listOfEdges = []
+
+    distances = getDistanceToEachRoom(0, rooms)
+    for j in distances:
+        listOfEdges.append(j)
 
     # Use Primm's Algorithm to draw a connected path to each room
     for i in range(len(rooms)-1):
         minNode = []
         minValue = 999999
-
-        # Store a list of the edges that connects nodes already in the tree
-        listOfEdges = []
-        for i in connectedRooms:
-            distances = getDistanceToEachRoom(i, rooms)
-            for j in distances:
-                listOfEdges.append(j)
 
         # Go through each edge to find the minimum 
         for j in listOfEdges:
@@ -164,9 +162,18 @@ def drawPath(map, rooms):
                     minValue = j[0]
                     minNode = j
 
-        # Append the indexes of the rooms added to the list of already connected rooms
-        connectedRooms.append(minNode[1])
-        connectedRooms.append(minNode[2])
+        # If the indexes are not already in connected rooms, add it to the connected room lists and add edges to list
+        if(not minNode[1] in connectedRooms):
+            connectedRooms.append(minNode[1])
+            distances = getDistanceToEachRoom(minNode[1], rooms)
+            for j in distances:
+                listOfEdges.append(j)
+            
+        if(not minNode[2] in connectedRooms):
+            connectedRooms.append(minNode[2])
+            distances = getDistanceToEachRoom(minNode[2], rooms)
+            for j in distances:
+                listOfEdges.append(j)
 
         # Draw the hallway between the rooms
         drawHallway(map, rooms[minNode[1]], rooms[minNode[2]])
