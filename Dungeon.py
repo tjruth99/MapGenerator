@@ -95,7 +95,8 @@ def generateClassicDungeonSnake(n, numRooms):
 # TODO:
 #   - add more paths between rooms
 #   - make hallways more maze-like (?)
-def generateDungeon(n, cells):
+def generateDungeon(cells):
+    n = cells * 30
     maxRoomSizeDim = int(n/cells)-5
     minRoomSizeDim = 10
     
@@ -236,21 +237,16 @@ def printColor(map):
             else:
                 data[i][j] = [255, 255, 255]
 
-    scaleUp(map, 10)
+    scaleUp(data, n, 10)
 
-def scaleUp(map, factor):
-    n = int(map.size**(1/2.0))
+def scaleUp(map, n, factor):
     data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
 
     for i in range(n):
         for j in range(n):
             for k in range(factor):
                 for l in range(factor):
-                    val = map[i][j]
-                    if val == 0:
-                        data[(i*factor)+k][(j*factor)+l] = [0,0,0]
-                    elif val == 1:
-                        data[(i*factor)+k][(j*factor)+l] = [255, 255, 255]
+                    data[(i*factor)+k][(j*factor)+l] = map[i][j]
 
     Image.fromarray(data).show()
 
@@ -261,7 +257,5 @@ def printArray(map):
             print(map[i][j], end=" ")
         print()
 
-
-generateDungeon(90, 3)
-#generateClassicDungeon(10, 10)
-#generateClassicDungeonSnake(10, 10)
+cells = int(input("Dungeon Size: "))
+generateDungeon(cells)
