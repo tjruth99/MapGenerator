@@ -15,12 +15,16 @@ snow = [225, 225, 225]
 # Determines what color a point is based on its percent of 
 colorLevels = [0.35, 0.4, 0.45, 0.6, 0.7, 0.85]
 
+# n is the size of the map
 n = 1024
+# Scale determines how zoomed in the map is
 scale = 200
+# Octaves, persistence, and lacunarity determine the level of detail in the map
 octaves = 7
 persistence = 0.5
 lacunarity = 2.0
 
+# Get the min and max value in the map
 def getMinMax(map):
     n = int(map.size**(1/2.0))
     max = -1024
@@ -38,12 +42,31 @@ def getMinMax(map):
 
     return [min, max]
 
-
+# Generate a map using perlin noise with a seed
 def generateNoiseMap():
+    map = numpy.zeros((n,n))
+
+    # Get a random seed to generate a new map
+    seed = random.randint(-1000000, 1000000)
+
+    for i in range(n):
+        for j in range(n):
+            map[i][j] = noise.snoise2((i/scale), 
+                                    (j/scale), 
+                                    octaves, 
+                                    persistence, 
+                                    lacunarity, 
+                                    repeatx=n, 
+                                    repeaty=n, 
+                                    base=seed)
+
+    colorMap(map)
+    return map
+
+def generateNoiseMapWithInput():
     print("Generate Perlin Noise Map")
     map = numpy.zeros((n,n))
     
-    # TODO: Find a better way to do variability
     seed = int(input("seed: "))
 
     for i in range(n):
@@ -55,12 +78,12 @@ def generateNoiseMap():
                                     lacunarity, 
                                     repeatx=n, 
                                     repeaty=n, 
-                                    base=seed) + 0.5
+                                    base=seed)
 
-    colorMap(map)
-
+    #colorMap(map)
     return map
 
+# Draw the map with no color
 def greyscale(map):
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
 
@@ -71,12 +94,15 @@ def greyscale(map):
 
     Image.fromarray(data).show()
 
+# Color the map with the actual min and max values of the map
 def colorMap(map):
-    data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
-
     mm = getMinMax(map)
-    min = mm[0]
-    max = mm[1]
+    
+    colorMapMM(map, mm[0], mm[1])
+
+# Color the map with specified min and max values, used for extreme and flat maps
+def colorMapMM(map, min, max):
+    data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
 
     deepOceanLevel = (max-min)*colorLevels[0]+min
     oceanLevel = (max-min)*colorLevels[1]+min
@@ -117,5 +143,26 @@ def combine():
             map3[i][j] = num
 
     colorMap(map3)
-    
+
+# Generate a map with more extreme mountains and deep oceans
+def extreme(factor):
+    map = generateNoiseMap()
+
+    for i in range(n):
+        for j in range(n):
+            map[i][j] *= factor
+
+    colorMapMM(map, -1, 1)
+
+# Generate a map with less hills and and deep oceans
+def flat(factor):
+    map = generateNoiseMap()
+
+    for i in range(n):
+        for j in range(n):
+            map[i][j] /= factor
+
+    colorMapMM(map, -1, 1)
+
+
 generateNoiseMap()
