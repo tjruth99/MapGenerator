@@ -25,8 +25,10 @@ persistence = 0.5
 lacunarity = 2.0
 
 # Generate a map using perlin noise with a seed
-def generateNoiseMap():
+def generateNoiseMap(scale, octaves):
     map = numpy.zeros((n,n))
+
+    print(scale, octaves)
 
     # Get a random seed to generate a new map
     seed = random.randint(-1000000, 1000000)

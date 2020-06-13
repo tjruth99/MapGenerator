@@ -130,7 +130,7 @@ def elevate(map, n, elevation, rangeLength, brushSize):
 
         # For loop paints the range onto the map
         for i in range(rangeLength):
-            paint(n, x, y, 3, val, brushSize)
+            paint(map, n, x, y, 3, val, brushSize)
 
             val = random.randint(1,4)
             if val == 1:
