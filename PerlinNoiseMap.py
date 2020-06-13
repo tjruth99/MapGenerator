@@ -60,8 +60,9 @@ def generateNoiseMap():
                                     repeaty=n, 
                                     base=seed)
 
-    colorMap(map)
-    return map
+    data = colorMap(map)
+
+    return Image.fromarray(data)
 
 def generateNoiseMapWithInput():
     print("Generate Perlin Noise Map")
@@ -80,8 +81,8 @@ def generateNoiseMapWithInput():
                                     repeaty=n, 
                                     base=seed)
 
-    #colorMap(map)
-    return map
+    data = colorMap(map)
+    return Image.fromarray(data)
 
 # Draw the map with no color
 def greyscale(map):
@@ -92,13 +93,13 @@ def greyscale(map):
             num = map[i][j]
             data[i][j] = [num*225, num*225, num*225]
 
-    Image.fromarray(data).show()
+    return data
 
 # Color the map with the actual min and max values of the map
 def colorMap(map):
     mm = getMinMax(map)
     
-    colorMapMM(map, mm[0], mm[1])
+    return colorMapMM(map, mm[0], mm[1])
 
 # Color the map with specified min and max values, used for extreme and flat maps
 def colorMapMM(map, min, max):
@@ -129,7 +130,7 @@ def colorMapMM(map, min, max):
             else:                           #snow
                 data[i][j] = snow
 
-    Image.fromarray(data).show()
+    return data
 
 # Combining two perlin noise maps tends to give maps with a lot of islands
 def combine():
@@ -142,7 +143,8 @@ def combine():
             num = map1[i][j] * map2[i][j]
             map3[i][j] = num
 
-    colorMap(map3)
+    data = colorMap(map3)
+    return Image.fromarray(data)
 
 # Generate a map with more extreme mountains and deep oceans
 def extreme(factor):
@@ -152,7 +154,8 @@ def extreme(factor):
         for j in range(n):
             map[i][j] *= factor
 
-    colorMapMM(map, -1, 1)
+    data = colorMapMM(map, -1, 1)
+    return Image.fromarray(data)
 
 # Generate a map with less hills and and deep oceans
 def flat(factor):
@@ -162,7 +165,5 @@ def flat(factor):
         for j in range(n):
             map[i][j] /= factor
 
-    colorMapMM(map, -1, 1)
-
-
-generateNoiseMap()
+    data = colorMapMM(map, -1, 1)
+    return Image.fromarray(data)

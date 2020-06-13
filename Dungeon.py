@@ -135,9 +135,11 @@ def generateDungeon(cells):
         map[n-1][i] = 0
         map[i][n-1] = 0
 
-    scale = int(500/n)
+    # Get the dungeon with color data
+    data = getColor(map)
 
-    return getColor(map, scale)
+    # Return a Pillow Image
+    return Image.fromarray(data)
 
 # Draw the path to each room using minimum spanning tree
 def drawPath(map, rooms):
@@ -233,7 +235,7 @@ def drawHallway(map, fromRoom, toRoom):
             map[endX-1][j] = 1
 
             
-def getColor(map, scale):
+def getColor(map):
     n = int(map.size**(1/2.0))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
     
@@ -244,18 +246,7 @@ def getColor(map, scale):
             else:
                 data[i][j] = [255, 255, 255]
 
-    return scaleUp(data, n, scale)
-
-def scaleUp(map, n, factor):
-    data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
-
-    for i in range(n):
-        for j in range(n):
-            for k in range(factor):
-                for l in range(factor):
-                    data[(i*factor)+k][(j*factor)+l] = map[i][j]
-
-    return Image.fromarray(data)
+    return data
 
 def printArray(map):
     n = (map.size**(1/2.0))
@@ -264,7 +255,3 @@ def printArray(map):
             print(map[i][j], end=" ")
         print()
 
-def debug():
-    cells = int(input("Dungeon Size: "))
-    img = generateDungeon(cells)
-    img.show()
