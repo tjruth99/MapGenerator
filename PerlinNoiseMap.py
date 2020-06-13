@@ -24,24 +24,6 @@ octaves = 7
 persistence = 0.5
 lacunarity = 2.0
 
-# Get the min and max value in the map
-def getMinMax(map):
-    n = int(map.size**(1/2.0))
-    max = -1024
-    min = 1024
-
-    for i in range(n):
-        for j in range(n):
-            num = map[i][j]
-
-            if num > max:
-                max = num
-
-            if num < min:
-                min = num
-
-    return [min, max]
-
 # Generate a map using perlin noise with a seed
 def generateNoiseMap():
     map = numpy.zeros((n,n))
@@ -94,6 +76,24 @@ def greyscale(map):
             data[i][j] = [num*225, num*225, num*225]
 
     return data
+
+# Get the min and max value in the map
+def getMinMax(map):
+    n = int(map.size**(1/2.0))
+    max = -1024
+    min = 1024
+
+    for i in range(n):
+        for j in range(n):
+            num = map[i][j]
+
+            if num > max:
+                max = num
+
+            if num < min:
+                min = num
+
+    return [min, max]
 
 # Color the map with the actual min and max values of the map
 def colorMap(map):

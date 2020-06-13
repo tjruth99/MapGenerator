@@ -1,10 +1,8 @@
 import random
 import math
-from colorama import init, Back, Style
 import numpy
-import scipy.misc as smp
 from PIL import Image
-init()
+
 
 # Variables:
 #   seed: seed for generation (optional)
@@ -19,83 +17,33 @@ init()
 #   brushSize: size of brush that paints the land/mountains (0 small, 1 medium, 2 large, 3 extra large)
 #       default: 1
 
-# random.seed( 10 )
-
-map = []
-waterColor = [0, 0, 200]
+waterColor = [0, 0, 225]
 landColor = [0, 150, 0]
 cityColor = [0, 0, 0]
 snowColor = [225, 225, 225]
 sandColor = [194, 178, 128]
 
-# 0 is water, 1 is land, 2 is a city, 3 is mountain, 4 is beach
-def printmap( n, printToConsole, scaleFactor ):
+colors = {
+    0: waterColor,
+    1: landColor,
+    2: cityColor,
+    3: snowColor,
+    4: sandColor
+}
+
+# output an image of
+def getMap(map, n):
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
 
-    global area
     for i in range(n):
         for j in range(n):
-            if map[i][j] == 0:
-                if(printToConsole):
-                    print(Back.BLUE + "0", end = " ")
+            # Get the color to draw from colors dictionary
+            data[i][j] = colors[map[i][j]]
 
-                data[i][j] = waterColor
-
-            elif map[i][j] == 1:
-                if(printToConsole):
-                    print(Back.GREEN + "1", end = " ")
-
-                data[i][j] = landColor
-
-            elif map[i][j] == 2:
-                if(printToConsole):
-                    print(Back.BLACK + "2", end = " ")
-
-                data[i][j] = cityColor
-
-            elif map[i][j] == 3:
-                if(printToConsole):
-                    print(Back.WHITE + "3", end = " ")
-
-                data[i][j] = snowColor
-
-            elif map[i][j] == 4:
-                if(printToConsole):
-                    print(Back.LIGHTYELLOW_EX + "4", end = " ")
-
-                data[i][j] = sandColor
-        if(printToConsole):
-            print(Back.RESET)
-
-    scaleUp(n, scaleFactor)
-   
-    #Image.fromarray(data).show()
-
-def scaleUp(n, factor):
-    data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
-
-    for i in range(n):
-        for j in range(n):
-            for k in range(factor):
-                for l in range(factor):
-                    val = map[i][j]
-                    if val == 0:
-                        data[(i*factor)+k][(j*factor)+l] = waterColor
-                    elif val == 1:
-                        data[(i*factor)+k][(j*factor)+l] = landColor
-                    elif val == 2:
-                        data[(i*factor)+k][(j*factor)+l] = cityColor
-                    elif val == 3:
-                        data[(i*factor)+k][(j*factor)+l] = snowColor
-                    elif val == 4:
-                        data[(i*factor)+k][(j*factor)+l] = sandColor
-                    else:
-                        print("error")
-
-    Image.fromarray(data).show()
+    return Image.fromarray(data)
 
 
-def paint(n, x, y, num, val, brushSize):
+def paint(map, n, x, y, num, val, brushSize):
     map[x][y] = num
 
     if(x == 0 or x == n-1 or y == 0 or y == n-1):
@@ -127,7 +75,7 @@ def paint(n, x, y, num, val, brushSize):
     pass
 
 #   Randomly add cities to the map proportional to the size of the map
-def populate(n, numCities):
+def populate(map, n, numCities):
     cities = 0
     tries = 0
 
@@ -148,7 +96,7 @@ def populate(n, numCities):
     pass
 
 #   Function to tell if a node is adjacent to a water node
-def nextToWater(n, x, y):
+def nextToWater(map, n, x, y):
     if(x == 0 or x == n-1 or y == 0 or y == n-1):
         return True
 
@@ -164,7 +112,7 @@ def nextToWater(n, x, y):
     return False
 
 #   Adds mountain ranges to the map
-def elevate(n, elevation, rangeLength, brushSize):
+def elevate(map, n, elevation, rangeLength, brushSize):
     for ranges in range(elevation):
         x = -1
         y = -1
@@ -172,7 +120,7 @@ def elevate(n, elevation, rangeLength, brushSize):
         tries = 0
 
         # While loop finds an appropriate starting location for a range
-        while (map[x][y] != 1 or nextToWater(n, x, y)):
+        while (map[x][y] != 1 or nextToWater(map, n, x, y)):
             if(tries >= n):
                 return
 
@@ -199,22 +147,17 @@ def elevate(n, elevation, rangeLength, brushSize):
 
     pass
 
-def beach(n):
-    for x in range(n):
-        for y in range(n):
-            if(map[x][y] == 1 and nextToWater(n, x,y)):
-                map[x][y] = 4
-    pass
-
 #   Generate map based on random walk
-def generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSize, scaleFactor):
+def generateRandomWalkMap(n, steps, elevation, rangeLength, islandCoef, brushSize):
     x = int(n/2)
     y = int(n/2)
     val = -1
 
+    map = numpy.zeros((n,n), dtype=int)
+
     for i in range(steps):
         if (0 < x < n-1) and (0 < y < n-1):
-            paint(n, x, y, 1, val, brushSize)
+            paint(map, n, x, y, 1, val, brushSize)
         else:
             x = random.randint(0,n-1)
             y = random.randint(0,n-1)
@@ -234,29 +177,20 @@ def generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSi
         else:
             y = y - 1
 
-    elevate(n, elevation, rangeLength, brushSize)
-    populate(n, numCities)
-#   beach(n)
-    printmap(n, False, scaleFactor)
-    pass
+    elevate(map, n, elevation, rangeLength, brushSize)
+
+    return getMap(map, n)
 
 def randomWalk():
-    global map
-
     print("Generate Random Walk Map")
 
     n = int(input("n: "))
     steps = int(input("enter steps: "))
     elevation = int(input("elevation: "))
     rangeLength = int(input("rangeLength: "))
-    numCities = math.ceil(n/10)
     islandCoef = float(input("islandCoef: "))
     brushSize = int(input("brush_size: "))
-    scaleFactor = int(input("scale factor: "))
-
-    map = [[0 for i in range(n)] for j in range(n)]
 
     print("n: %d, steps: %d" %(n,steps))
-    generateMap(n, steps, elevation, rangeLength, numCities, islandCoef, brushSize, scaleFactor)
-
-randomWalk()
+    img = generateRandomWalkMap(n, steps, elevation, rangeLength, islandCoef, brushSize)
+    img.resize((500, 500)).show()
