@@ -52,7 +52,7 @@ def generateClassicDungeon(n, maxRooms):
                 y = y - 1
 
     # print the map for debugging
-    printColor(map)
+    getColor(map).show()
 
     return map
 
@@ -87,7 +87,7 @@ def generateClassicDungeonSnake(n, numRooms):
         elif (val == 4 and y > 0):
             y = y - 1
 
-    printColor(map)
+    getColor(map).show()
 
     return map
 
@@ -135,9 +135,9 @@ def generateDungeon(cells):
         map[n-1][i] = 0
         map[i][n-1] = 0
 
-    printColor(map)
+    scale = int(500/n)
 
-    return map
+    return getColor(map, scale)
 
 # Draw the path to each room using minimum spanning tree
 def drawPath(map, rooms):
@@ -233,7 +233,7 @@ def drawHallway(map, fromRoom, toRoom):
             map[endX-1][j] = 1
 
             
-def printColor(map):
+def getColor(map, scale):
     n = int(map.size**(1/2.0))
     data = numpy.zeros( (n,n,3), dtype=numpy.uint8 )
     
@@ -244,7 +244,7 @@ def printColor(map):
             else:
                 data[i][j] = [255, 255, 255]
 
-    scaleUp(data, n, 10)
+    return scaleUp(data, n, scale)
 
 def scaleUp(map, n, factor):
     data = numpy.zeros( (n*factor,n*factor,3), dtype=numpy.uint8 )
@@ -255,7 +255,7 @@ def scaleUp(map, n, factor):
                 for l in range(factor):
                     data[(i*factor)+k][(j*factor)+l] = map[i][j]
 
-    Image.fromarray(data).show()
+    return Image.fromarray(data)
 
 def printArray(map):
     n = (map.size**(1/2.0))
@@ -264,5 +264,7 @@ def printArray(map):
             print(map[i][j], end=" ")
         print()
 
-cells = int(input("Dungeon Size: "))
-generateDungeon(cells)
+def debug():
+    cells = int(input("Dungeon Size: "))
+    img = generateDungeon(cells)
+    img.show()
