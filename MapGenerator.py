@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from PIL import ImageTk, Image
+import time
+import os
 
 from Dungeon import generateDungeon
 from PerlinNoiseMap import generateNoiseMap
@@ -9,6 +11,17 @@ from RandomWalk import generateRandomWalkMap
 
 imgSize = 500,500
 cells = 3
+map = generateDungeon(cells)
+
+def saveImage():
+    t = time.localtime()
+    cur_time = time.strftime("%Y-%d-%m-%H-%M-%S", t)
+
+    file_name = os.getcwd() + "\\images\\" + cur_time + ".png"
+    print(file_name)
+
+    map.save(file_name, "PNG")
+    pass
 
 def getDungeon(): 
     try:
@@ -18,6 +31,7 @@ def getDungeon():
         return
 
     if(cells >= 2 and cells <= 15):
+        global map
         map = generateDungeon(cells)
         img = ImageTk.PhotoImage(map.resize(imgSize))
         canvas.create_image(0,0, anchor=NW, image=img)
@@ -26,12 +40,14 @@ def getDungeon():
         messagebox.showinfo("Invalid Range", "Please enter a number between 2 and 15")
 
 def getPerlinMap():
+    global map
     map = generateNoiseMap()
     img = ImageTk.PhotoImage(map.resize(imgSize))
     canvas.create_image(0,0, anchor=NW, image=img)
     canvas.image = img
 
 def getRandomWalkMap():
+    global map
     map = generateRandomWalkMap(250, 50000, 0, 0, 0, 2)
     img = ImageTk.PhotoImage(map.resize(imgSize))
     canvas.create_image(0,0, anchor=NW, image=img)
@@ -78,5 +94,7 @@ if __name__ == "__main__":
 
     canvas = Canvas(root, width=500, height=500)
     canvas.grid(row=4, column=0)
+
+    Button(root, text="Save Image", command=saveImage).grid(row = 5, column=0)
 
     root.mainloop()
