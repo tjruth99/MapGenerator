@@ -13,12 +13,12 @@ mountain = [100, 100, 100]
 snow = [225, 225, 225]
 
 # Determines what color a point is based on its percent of 
-colorLevels = [0.35, 0.4, 0.45, 0.6, 0.7, 0.85]
+colorLevels = [0.25, 0.4, 0.45, 0.6, 0.7, 0.85]
 
 # n is the size of the map
-n = 1024
+n = 500
 # Scale determines how zoomed in the map is
-scale = 200
+scale = 100
 # Octaves, persistence, and lacunarity determine the level of detail in the map
 octaves = 7
 persistence = 0.5

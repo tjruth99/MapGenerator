@@ -210,13 +210,13 @@ def getDistanceToEachRoom(index, rooms):
 
 # Draw a hallway between two rooms
 def drawHallway(map, fromRoom, toRoom):
-    # get the starting coordinates for the hallway from somewhere in the from room
-    startX = random.randint(fromRoom[0]+1, fromRoom[2]-1)
-    startY = random.randint(fromRoom[1]+1, fromRoom[3]-1)
+    # get the starting coordinates for the hallway from the middle of the room
+    startX = int((fromRoom[0] + fromRoom[2]) / 2)
+    startY = int((fromRoom[1] + fromRoom[3]) / 2)
 
-    # get the ending coordinates for the hallway from somewhere in the to room
-    endX = random.randint(toRoom[0]+1, toRoom[2]-1)
-    endY = random.randint(toRoom[1]+1, toRoom[3]-1)
+    # get the ending coordinates for the hallway from the middle of the room
+    endX = int((toRoom[0] + toRoom[2]) / 2)
+    endY = int((toRoom[1] + toRoom[3]) / 2)
 
     # draw the hallway on the x plane
     if(endX > startX):
